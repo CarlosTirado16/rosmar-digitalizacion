@@ -2,7 +2,6 @@ package com.rosmar.digitalizacion.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Entity
 @Table(name = "registros_ssop")
@@ -14,12 +13,6 @@ public class RegistroSSOP {
 
     @Column(nullable = false)
     private LocalDate fecha;
-
-    @Column(nullable = false)
-    private LocalTime horaInicio;
-
-    @Column(nullable = false)
-    private LocalTime horaFin;
 
     @Column(nullable = false)
     private String imagenPath;
@@ -34,12 +27,6 @@ public class RegistroSSOP {
 
     public LocalDate getFecha() { return fecha; }
     public void setFecha(LocalDate fecha) { this.fecha = fecha; }
-
-    public LocalTime getHoraInicio() { return horaInicio; }
-    public void setHoraInicio(LocalTime horaInicio) { this.horaInicio = horaInicio; }
-
-    public LocalTime getHoraFin() { return horaFin; }
-    public void setHoraFin(LocalTime horaFin) { this.horaFin = horaFin; }
 
     public String getImagenPath() { return imagenPath; }
     public void setImagenPath(String imagenPath) { this.imagenPath = imagenPath; }
