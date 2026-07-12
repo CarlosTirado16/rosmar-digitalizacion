@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rosmar — Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f0f2f5; }
+        .navbar {
+            background: #1F3864; color: white;
+            padding: 14px 24px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .navbar h1 { font-size: 18px; }
+        .navbar a {
+            color: white; text-decoration: none; font-size: 14px;
+        }
+        .container { padding: 32px; max-width: 900px; margin: 0 auto; }
+        .welcome {
+            background: white; border-radius: 8px;
+            padding: 24px; margin-bottom: 24px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .welcome h2 { color: #1F3864; margin-bottom: 8px; }
+        .welcome p { color: #666; font-size: 14px; }
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+        .card {
+            background: white; border-radius: 8px;
+            padding: 24px; text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .card h3 { color: #1F3864; font-size: 16px; margin-bottom: 8px; }
+        .card p { color: #888; font-size: 13px; }
+        .badge-supervisor {
+            display: inline-block;
+            background: #1F3864; color: white;
+            padding: 3px 10px; border-radius: 12px;
+            font-size: 12px; margin-left: 8px;
+        }
+        .badge-empleado {
+            display: inline-block;
+            background: #2E75B6; color: white;
+            padding: 3px 10px; border-radius: 12px;
+            font-size: 12px; margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <h1>Rosmar — Consultoría de Sanidad</h1>
+    <div>
+        <span sec:authentication="name"></span>
+        <span sec:authorize="hasRole('SUPERVISOR')" class="badge-supervisor">Supervisor</span>
+        <span sec:authorize="hasRole('EMPLEADO')" class="badge-empleado">Empleado</span>
+        &nbsp;&nbsp;
+        <form th:action="@{/logout}" method="post" style="display:inline;">
+            <button type="submit" style="background:none; border:none; color:white; cursor:pointer; font-size:14px;">
+                Cerrar sesión
+            </button>
+        </form>
+    </div>
+</div>
+<div class="container">
+    <div class="welcome">
+        <h2>Bienvenido al sistema de digitalización de formatos sanitarios</h2>
+        <p>Selecciona una opción del menú para continuar.</p>
+    </div>
+    <div class="cards">
+        <div class="card">
+            <h3>Subir formato</h3>
+            <p>Toma una foto del formato físico y súbela al sistema</p>
+        </div>
+        <div class="card">
+            <h3>Historial</h3>
+            <p>Consulta los registros anteriores del formato SSOP</p>
+        </div>
+        <div class="card" sec:authorize="hasRole('SUPERVISOR')">
+            <h3>Exportar Excel</h3>
+            <p>Descarga el historial por rango de fechas</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

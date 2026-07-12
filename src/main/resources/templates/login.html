@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rosmar — Iniciar Sesión</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 380px;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo h1 { color: #1F3864; font-size: 24px; }
+        .logo p { color: #666; font-size: 13px; margin-top: 4px; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-size: 14px; color: #333; margin-bottom: 6px; }
+        input {
+            width: 100%; padding: 10px 12px;
+            border: 1px solid #ddd; border-radius: 6px;
+            font-size: 14px; outline: none;
+        }
+        input:focus { border-color: #2E75B6; }
+        .btn-login {
+            width: 100%; padding: 12px;
+            background-color: #1F3864; color: white;
+            border: none; border-radius: 6px;
+            font-size: 15px; cursor: pointer; margin-top: 8px;
+        }
+        .btn-login:hover { background-color: #2E75B6; }
+        .alert {
+            padding: 10px 14px; border-radius: 6px;
+            font-size: 13px; margin-bottom: 16px;
+        }
+        .alert-error { background-color: #fce4d6; color: #c00; }
+        .alert-success { background-color: #d9ead3; color: #1E6B3C; }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <div class="logo">
+        <h1>Rosmar</h1>
+        <p>Consultoría de Sanidad</p>
+    </div>
+
+    <div th:if="${param.error}" class="alert alert-error">
+        Correo o contraseña incorrectos.
+    </div>
+    <div th:if="${param.logout}" class="alert alert-success">
+        Sesión cerrada correctamente.
+    </div>
+
+    <form th:action="@{/login}" method="post">
+        <div class="form-group">
+            <label for="username">Correo electrónico</label>
+            <input type="email" id="username" name="username"
+                   placeholder="ejemplo@rosmar.com" required autofocus>
+        </div>
+        <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" name="password"
+                   placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn-login">Iniciar sesión</button>
+    </form>
+</div>
+</body>
+</html>
