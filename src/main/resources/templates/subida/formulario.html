@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rosmar — Subir Formato</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f0f2f5; }
+        .navbar {
+            background: #1F3864; color: white;
+            padding: 14px 24px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .navbar h1 { font-size: 18px; }
+        .navbar a { color: white; text-decoration: none; font-size: 14px; }
+        .container { padding: 32px; max-width: 600px; margin: 0 auto; }
+        h2 { color: #1F3864; margin-bottom: 20px; }
+        .card {
+            background: white; border-radius: 8px;
+            padding: 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .upload-area {
+            border: 2px dashed #2E75B6;
+            border-radius: 8px; padding: 40px;
+            text-align: center; cursor: pointer;
+            margin-bottom: 20px; transition: background 0.2s;
+        }
+        .upload-area:hover { background: #f0f7ff; }
+        .upload-area p { color: #666; font-size: 14px; margin-top: 8px; }
+        .upload-area span { font-size: 36px; }
+        input[type="file"] { display: none; }
+        .preview {
+            display: none; margin-bottom: 20px;
+            text-align: center;
+        }
+        .preview img {
+            max-width: 100%; max-height: 300px;
+            border-radius: 8px; border: 1px solid #ddd;
+        }
+        .file-name {
+            font-size: 13px; color: #2E75B6;
+            margin-top: 8px;
+        }
+        .btn {
+            width: 100%; padding: 12px;
+            border: none; border-radius: 6px;
+            font-size: 15px; cursor: pointer;
+        }
+        .btn-primary { background: #1F3864; color: white; }
+        .btn-primary:hover { background: #2E75B6; }
+        .btn-secondary {
+            background: #eee; color: #333;
+            margin-top: 10px; text-decoration: none;
+            display: block; text-align: center; line-height: 2.5;
+        }
+        .alert-error {
+            background: #fce4d6; color: #c00;
+            padding: 10px 14px; border-radius: 6px;
+            font-size: 13px; margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <h1>Rosmar — Consultoría de Sanidad</h1>
+    <a th:href="@{/dashboard}">← Volver al inicio</a>
+</div>
+<div class="container">
+    <h2>Subir Formato SSOP-R-PO</h2>
+    <div class="card">
+        <div th:if="${error}" class="alert-error" th:text="${error}"></div>
+
+        <form th:action="@{/subida}" method="post" enctype="multipart/form-data">
+            <div class="upload-area" onclick="document.getElementById('archivo').click()">
+                <span>📷</span>
+                <p>Haz clic aquí para seleccionar la foto del formato</p>
+                <p>JPG, PNG — máximo 10MB</p>
+            </div>
+
+            <div class="preview" id="preview">
+                <img id="imagenPreview" src="" alt="Vista previa">
+                <p class="file-name" id="fileName"></p>
+            </div>
+
+            <input type="file" id="archivo" name="archivo"
+                   accept="image/*" required
+                   onchange="mostrarPreview(this)">
+
+            <button type="submit" class="btn btn-primary">Subir foto</button>
+            <a th:href="@{/dashboard}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+
+<script>
+    function mostrarPreview(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('imagenPreview').src = e.target.result;
+                document.getElementById('fileName').textContent = input.files[0].name;
+                document.getElementById('preview').style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+</body>
+</html>
