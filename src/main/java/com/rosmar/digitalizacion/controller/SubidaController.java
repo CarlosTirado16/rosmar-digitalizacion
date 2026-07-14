@@ -1,10 +1,10 @@
 package com.rosmar.digitalizacion.controller;
 
+import com.rosmar.digitalizacion.model.ItemSSOP;
 import com.rosmar.digitalizacion.model.RegistroSSOP;
 import com.rosmar.digitalizacion.model.Usuario;
 import com.rosmar.digitalizacion.repository.UsuarioRepository;
-import com.rosmar.digitalizacion.service.ArchivoService;
-import com.rosmar.digitalizacion.service.RegistroSSOPService;
+import com.rosmar.digitalizacion.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Controller
 @RequestMapping("/subida")
@@ -20,13 +21,22 @@ public class SubidaController {
     private final ArchivoService archivoService;
     private final RegistroSSOPService registroSSOPService;
     private final UsuarioRepository usuarioRepository;
+    private final ClaudeVisionService claudeVisionService;
+    private final ProcesadorSSOPService procesadorSSOPService;
+    private final ItemSSOPService itemSSOPService;
 
     public SubidaController(ArchivoService archivoService,
                             RegistroSSOPService registroSSOPService,
-                            UsuarioRepository usuarioRepository) {
+                            UsuarioRepository usuarioRepository,
+                            ClaudeVisionService claudeVisionService,
+                            ProcesadorSSOPService procesadorSSOPService,
+                            ItemSSOPService itemSSOPService) {
         this.archivoService = archivoService;
         this.registroSSOPService = registroSSOPService;
         this.usuarioRepository = usuarioRepository;
+        this.claudeVisionService = claudeVisionService;
+        this.procesadorSSOPService = procesadorSSOPService;
+        this.itemSSOPService = itemSSOPService;
     }
 
     @GetMapping
@@ -46,21 +56,31 @@ public class SubidaController {
             Usuario usuario = usuarioRepository.findByEmail(principal.getName())
                     .orElseThrow();
 
-            // Crear registro
+            // Crear registro inicial
             RegistroSSOP registro = new RegistroSSOP();
             registro.setFecha(LocalDate.now());
             registro.setImagenPath(nombreArchivo);
             registro.setRegistradoPor(usuario);
+            RegistroSSOP registroGuardado = registroSSOPService.guardar(registro);
 
-            // Guardar en BD
-            registroSSOPService.guardar(registro);
+            // Extraer datos con Claude Vision API
+            String jsonRespuesta = claudeVisionService.extraerDatosFormato(archivo);
 
-            model.addAttribute("mensaje", "Imagen subida correctamente.");
+            // Procesar y guardar los ítems
+            List<ItemSSOP> items = procesadorSSOPService.procesarRespuestaIA(jsonRespuesta, registroGuardado);
+            itemSSOPService.guardarTodos(items);
+
+            // Actualizar fecha del registro si fue extraída
+            registroSSOPService.guardar(registroGuardado);
+
+            model.addAttribute("mensaje", "Formato procesado correctamente.");
             model.addAttribute("imagenPath", nombreArchivo);
+            model.addAttribute("items", items);
+            model.addAttribute("registro", registroGuardado);
             return "subida/confirmacion";
 
         } catch (Exception e) {
-            model.addAttribute("error", "Error al subir la imagen: " + e.getMessage());
+            model.addAttribute("error", "Error al procesar el formato: " + e.getMessage());
             return "subida/formulario";
         }
     }
