@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.rosmar.digitalizacion.service.ItemSSOPService;
+import java.util.List;
 
 import java.security.Principal;
 import java.time.LocalDate;
@@ -77,11 +79,22 @@ public class SubidaController {
             model.addAttribute("imagenPath", nombreArchivo);
             model.addAttribute("items", items);
             model.addAttribute("registro", registroGuardado);
-            return "subida/confirmacion";
+            return "redirect:/subida/revision/" + registroGuardado.getId();
 
         } catch (Exception e) {
             model.addAttribute("error", "Error al procesar el formato: " + e.getMessage());
             return "subida/formulario";
         }
+    }
+
+    @GetMapping("/revision/{id}")
+    public String mostrarRevision(@PathVariable Long id, Model model) {
+        RegistroSSOP registro = registroSSOPService.buscarPorId(id).orElseThrow();
+        List<ItemSSOP> items = itemSSOPService.listarPorRegistro(id);
+
+        model.addAttribute("registro", registro);
+        model.addAttribute("items", items);
+        model.addAttribute("imagenPath", registro.getImagenPath());
+        return "subida/confirmacion";
     }
 }
