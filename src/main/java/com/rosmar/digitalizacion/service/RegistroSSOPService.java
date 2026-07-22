@@ -27,4 +27,7 @@ public class RegistroSSOPService {
     public List<RegistroSSOP> listarPorRangoDeFechas(LocalDate inicio, LocalDate fin) {
         return registroSSOPRepository.findByFechaBetween(inicio, fin);
     }
+    public java.util.Optional<RegistroSSOP> buscarPorId(Long id) {
+        return registroSSOPRepository.findById(id);
+    }
 }
