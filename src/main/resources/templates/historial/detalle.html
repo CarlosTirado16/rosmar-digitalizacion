@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rosmar — Detalle del registro</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f0f2f5; }
+        .navbar {
+            background: #1F3864; color: white;
+            padding: 14px 24px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .navbar h1 { font-size: 18px; }
+        .navbar a { color: white; text-decoration: none; font-size: 14px; }
+        .container { padding: 24px; max-width: 1100px; margin: 0 auto; }
+        h2 { color: #1F3864; margin-bottom: 16px; }
+        .card {
+            background: white; border-radius: 8px;
+            padding: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        .card h3 { color: #1F3864; margin-bottom: 12px; font-size: 16px; }
+        .info-row { display: flex; gap: 24px; margin-bottom: 16px; }
+        .info-item label { font-size: 12px; color: #888; display: block; }
+        .info-item span { font-size: 15px; font-weight: bold; color: #1F3864; }
+        .imagen-subida {
+            max-width: 300px; border-radius: 8px;
+            border: 1px solid #ddd; float: right; margin-left: 20px;
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th {
+            background: #1F3864; color: white;
+            padding: 8px 10px; text-align: left;
+        }
+        td { padding: 7px 10px; border-bottom: 1px solid #eee; }
+        tr:hover td { background: #f9f9f9; }
+        .status-check { color: #1E6B3C; font-weight: bold; }
+        .status-x { color: #c00; font-weight: bold; }
+        .status-na { color: #888; }
+        .badge-daily {
+            background: #D6E4F0; color: #1F3864;
+            padding: 2px 8px; border-radius: 10px; font-size: 11px;
+        }
+        .badge-weekly {
+            background: #FFF2CC; color: #7f6000;
+            padding: 2px 8px; border-radius: 10px; font-size: 11px;
+        }
+        .btn {
+            padding: 10px 20px; border-radius: 6px;
+            border: none; cursor: pointer; font-size: 14px;
+            text-decoration: none; display: inline-block;
+        }
+        .btn-secondary { background: #eee; color: #333; }
+        .btn-secondary:hover { background: #ddd; }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <h1>Rosmar — Consultoría de Sanidad</h1>
+    <a th:href="@{/historial}">← Volver al historial</a>
+</div>
+<div class="container">
+    <h2 th:text="'Registro #' + ${registro.id}"></h2>
+
+    <div class="card">
+        <img th:src="@{/uploads/{nombre}(nombre=${registro.imagenPath})}"
+             class="imagen-subida" alt="Formato">
+        <h3>Información del registro</h3>
+        <div class="info-row">
+            <div class="info-item">
+                <label>Fecha del formato</label>
+                <span th:text="${registro.fecha}"></span>
+            </div>
+            <div class="info-item">
+                <label>Registrado por</label>
+                <span th:text="${registro.registradoPor.nombre + ' ' + registro.registradoPor.apellido}"></span>
+            </div>
+        </div>
+        <div style="clear:both;"></div>
+    </div>
+
+    <!-- Processing Area -->
+    <div class="card">
+        <h3>Processing Area</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Área / Equipo</th>
+                <th>Frecuencia</th>
+                <th>Status</th>
+                <th>Deviation</th>
+                <th>Corrective Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${registro.items}" th:if="${item.seccion.name() == 'PROCESSING_AREA'}">
+                <td th:text="${item.mpsReferenceNumber}"></td>
+                <td th:text="${item.area}"></td>
+                <td>
+                    <span th:if="${item.frecuencia != null and item.frecuencia.name() == 'DAILY'}" class="badge-daily">Daily</span>
+                    <span th:if="${item.frecuencia != null and item.frecuencia.name() == 'ONCE_A_WEEK'}" class="badge-weekly">Once a week</span>
+                </td>
+                <td>
+                    <span th:if="${item.status == '✓'}" class="status-check">✓</span>
+                    <span th:if="${item.status == 'X'}" class="status-x">X</span>
+                    <span th:if="${item.status == 'NA'}" class="status-na">NA</span>
+                    <span th:if="${item.status == null or item.status == ''}">—</span>
+                </td>
+                <td th:text="${item.deviation != null ? item.deviation : '—'}"></td>
+                <td>
+                    <span th:if="${item.rewashed}">Rewashed </span>
+                    <span th:if="${item.rinsed}">Rinsed </span>
+                    <span th:if="${item.sanitized}">Sanitized </span>
+                    <span th:if="${item.notInUse}">Not in use</span>
+                    <span th:if="${!item.rewashed and !item.rinsed and !item.sanitized and !item.notInUse}">—</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Packaging Area -->
+    <div class="card">
+        <h3>Packaging Area</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Área / Equipo</th>
+                <th>Frecuencia</th>
+                <th>Status</th>
+                <th>Deviation</th>
+                <th>Corrective Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${registro.items}" th:if="${item.seccion.name() == 'PACKAGING_AREA'}">
+                <td th:text="${item.mpsReferenceNumber}"></td>
+                <td th:text="${item.area}"></td>
+                <td>
+                    <span th:if="${item.frecuencia != null and item.frecuencia.name() == 'DAILY'}" class="badge-daily">Daily</span>
+                    <span th:if="${item.frecuencia != null and item.frecuencia.name() == 'ONCE_A_WEEK'}" class="badge-weekly">Once a week</span>
+                </td>
+                <td>
+                    <span th:if="${item.status == '✓'}" class="status-check">✓</span>
+                    <span th:if="${item.status == 'X'}" class="status-x">X</span>
+                    <span th:if="${item.status == 'NA'}" class="status-na">NA</span>
+                    <span th:if="${item.status == null or item.status == ''}">—</span>
+                </td>
+                <td th:text="${item.deviation != null ? item.deviation : '—'}"></td>
+                <td>
+                    <span th:if="${item.rewashed}">Rewashed </span>
+                    <span th:if="${item.rinsed}">Rinsed </span>
+                    <span th:if="${item.sanitized}">Sanitized </span>
+                    <span th:if="${item.notInUse}">Not in use</span>
+                    <span th:if="${!item.rewashed and !item.rinsed and !item.sanitized and !item.notInUse}">—</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a th:href="@{/historial}" class="btn btn-secondary">← Volver al historial</a>
+</div>
+</body>
+</html>

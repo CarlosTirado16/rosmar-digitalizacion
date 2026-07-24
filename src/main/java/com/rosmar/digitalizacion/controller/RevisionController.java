@@ -54,6 +54,6 @@ public class RevisionController {
         }
 
         redirectAttributes.addFlashAttribute("mensaje", "Registro confirmado y guardado correctamente.");
-        return "redirect:/dashboard";
+        return "redirect:/historial";
     }
 }
