@@ -21,6 +21,12 @@ public class RegistroSSOP {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario registradoPor;
 
+    @OneToMany(mappedBy = "registro", fetch = FetchType.EAGER)
+    private java.util.List<ItemSSOP> items = new java.util.ArrayList<>();
+
+    public java.util.List<ItemSSOP> getItems() { return items; }
+    public void setItems(java.util.List<ItemSSOP> items) { this.items = items; }
+
     // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
