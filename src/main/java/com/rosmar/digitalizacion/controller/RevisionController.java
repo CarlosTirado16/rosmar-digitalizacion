@@ -6,6 +6,7 @@ import com.rosmar.digitalizacion.service.RegistroSSOPService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.rosmar.digitalizacion.model.RegistroSSOP;
 
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,14 @@ public class RevisionController {
 
             itemSSOPService.guardar(item);
         }
+
+        String fechaStr = params.get("fecha");
+        if (fechaStr != null && !fechaStr.isEmpty()) {
+            RegistroSSOP registro = registroSSOPService.buscarPorId(registroId).orElseThrow();
+            registro.setFecha(java.time.LocalDate.parse(fechaStr));
+            registroSSOPService.guardar(registro);
+        }
+
 
         redirectAttributes.addFlashAttribute("mensaje", "Registro confirmado y guardado correctamente.");
         return "redirect:/historial";

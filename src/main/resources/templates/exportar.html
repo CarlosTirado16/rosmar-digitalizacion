@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rosmar — Exportar Excel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f0f2f5; }
+        .navbar {
+            background: #1F3864; color: white;
+            padding: 14px 24px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .navbar h1 { font-size: 18px; }
+        .navbar a { color: white; text-decoration: none; font-size: 14px; }
+        .container { padding: 32px; max-width: 600px; margin: 0 auto; }
+        h2 { color: #1F3864; margin-bottom: 20px; }
+        .card {
+            background: white; border-radius: 8px;
+            padding: 28px; box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 14px; color: #333; margin-bottom: 6px; font-weight: bold; }
+        input[type="date"] {
+            width: 100%; padding: 10px 12px;
+            border: 1px solid #ddd; border-radius: 6px;
+            font-size: 14px; outline: none;
+        }
+        input[type="date"]:focus { border-color: #2E75B6; }
+        .btn-group { display: flex; gap: 10px; margin-top: 8px; }
+        .btn {
+            padding: 12px 24px; border-radius: 6px;
+            border: none; cursor: pointer; font-size: 14px;
+            text-decoration: none; display: inline-block; text-align: center;
+        }
+        .btn-success { background: #1E6B3C; color: white; }
+        .btn-success:hover { background: #155230; }
+        .btn-secondary { background: #eee; color: #333; }
+        .btn-secondary:hover { background: #ddd; }
+        .alert-info {
+            background: #D6E4F0; color: #1F3864;
+            padding: 12px 16px; border-radius: 6px;
+            font-size: 14px; margin-bottom: 20px;
+        }
+        .btn-all {
+            width: 100%; padding: 12px;
+            background: #2E75B6; color: white;
+            border: none; border-radius: 6px;
+            font-size: 14px; cursor: pointer;
+            text-decoration: none; display: block;
+            text-align: center; margin-top: 16px;
+        }
+        .btn-all:hover { background: #1F3864; }
+        .divider {
+            text-align: center; color: #888;
+            margin: 20px 0; font-size: 13px;
+            border-top: 1px solid #eee; padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <h1>Rosmar — Consultoría de Sanidad</h1>
+    <a th:href="@{/dashboard}">← Volver al inicio</a>
+</div>
+<div class="container">
+    <h2>Exportar a Excel</h2>
+    <div class="card">
+        <div class="alert-info">
+            Selecciona un rango de fechas para exportar los registros correspondientes, o descarga todos los registros disponibles.
+        </div>
+
+        <form th:action="@{/exportar/excel}" method="get">
+            <div class="form-group">
+                <label for="inicio">Fecha inicio</label>
+                <input type="date" id="inicio" name="inicio" required>
+            </div>
+            <div class="form-group">
+                <label for="fin">Fecha fin</label>
+                <input type="date" id="fin" name="fin" required>
+            </div>
+            <div class="btn-group">
+                <button type="submit" class="btn btn-success">⬇ Exportar por rango</button>
+                <a th:href="@{/dashboard}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+
+        <div class="divider">o</div>
+
+        <a th:href="@{/exportar/excel}" class="btn-all">⬇ Exportar todos los registros</a>
+    </div>
+</div>
+</body>
+</html>
