@@ -55,4 +55,9 @@ public class ExportarController {
                 .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                 .body(excelBytes);
     }
+
+    @GetMapping
+    public String mostrarPagina() {
+        return "exportar";
+    }
 }
