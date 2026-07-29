@@ -24,16 +24,12 @@ public class ExportarExcelService {
 
     public byte[] exportarRegistros(List<RegistroSSOP> registros) throws IOException {
         System.setProperty("java.awt.headless", "true");
+
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
 
-            // Estilos
             CellStyle headerStyle = workbook.createCellStyle();
             headerStyle.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
             headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-            Font headerFont = workbook.createFont();
-            headerFont.setColor(IndexedColors.WHITE.getIndex());
-            headerFont.setBold(true);
-            headerStyle.setFont(headerFont);
             headerStyle.setBorderBottom(BorderStyle.THIN);
             headerStyle.setBorderTop(BorderStyle.THIN);
             headerStyle.setBorderLeft(BorderStyle.THIN);
@@ -50,80 +46,36 @@ public class ExportarExcelService {
             altStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
             altStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-            CellStyle titleStyle = workbook.createCellStyle();
-            Font titleFont = workbook.createFont();
-            titleFont.setBold(true);
-            titleFont.setFontHeightInPoints((short) 14);
-            titleStyle.setFont(titleFont);
-
-            // Crear hoja por cada registro
             for (RegistroSSOP registro : registros) {
                 registro.setItems(itemSSOPRepository.findByRegistroId(registro.getId()));
-                System.out.println("Registro " + registro.getId() + " tiene " + registro.getItems().size() + " items");
-                String sheetName = "Registro " + registro.getId();
-                Sheet sheet = workbook.createSheet(sheetName);
 
+                String sheetName = "Reg-" + registro.getId();
+                Sheet sheet = workbook.createSheet(sheetName);
                 int rowNum = 0;
 
-                // Título
                 Row titleRow = sheet.createRow(rowNum++);
-                Cell titleCell = titleRow.createCell(0);
-                titleCell.setCellValue("SSOP-R-PO Pre-Operational Log — Registro #" + registro.getId());
-                titleCell.setCellStyle(titleStyle);
-                sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 8));
+                titleRow.createCell(0).setCellValue("Registro #" + registro.getId() +
+                        " | Fecha: " + registro.getFecha() +
+                        " | Por: " + registro.getRegistradoPor().getNombre() +
+                        " " + registro.getRegistradoPor().getApellido());
 
-                // Info del registro
-                Row infoRow = sheet.createRow(rowNum++);
-                infoRow.createCell(0).setCellValue("Fecha: " + registro.getFecha());
-                infoRow.createCell(3).setCellValue("Registrado por: " +
-                        registro.getRegistradoPor().getNombre() + " " +
-                        registro.getRegistradoPor().getApellido());
-                sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 2));
-                sheet.addMergedRegion(new CellRangeAddress(1, 1, 3, 8));
+                rowNum++;
 
-                rowNum++; // espacio
-
-                // Processing Area
-                Row processingTitle = sheet.createRow(rowNum++);
-                Cell ptCell = processingTitle.createCell(0);
-                ptCell.setCellValue("PROCESSING AREA");
-                CellStyle ptStyle = workbook.createCellStyle();
-                ptStyle.cloneStyleFrom(headerStyle);
-                ptCell.setCellStyle(ptStyle);
-                sheet.addMergedRegion(new CellRangeAddress(rowNum - 1, rowNum - 1, 0, 8));
+                Row paTitle = sheet.createRow(rowNum++);
+                paTitle.createCell(0).setCellValue("PROCESSING AREA");
 
                 rowNum = crearEncabezados(sheet, workbook, rowNum, headerStyle);
                 rowNum = crearFilasItems(sheet, workbook, rowNum, registro.getItems(),
                         ItemSSOP.Seccion.PROCESSING_AREA, dataStyle, altStyle);
 
-                rowNum++; // espacio
+                rowNum++;
 
-                // Packaging Area
-                Row packagingTitle = sheet.createRow(rowNum++);
-                Cell pakCell = packagingTitle.createCell(0);
-                pakCell.setCellValue("PACKAGING AREA");
-                pakCell.setCellStyle(ptStyle);
-                sheet.addMergedRegion(new CellRangeAddress(rowNum - 1, rowNum - 1, 0, 8));
+                Row pakTitle = sheet.createRow(rowNum++);
+                pakTitle.createCell(0).setCellValue("PACKAGING AREA");
 
                 rowNum = crearEncabezados(sheet, workbook, rowNum, headerStyle);
                 rowNum = crearFilasItems(sheet, workbook, rowNum, registro.getItems(),
                         ItemSSOP.Seccion.PACKAGING_AREA, dataStyle, altStyle);
-                System.out.println("Items totales para procesar: " + registro.getItems().size());
-                long processingCount = registro.getItems().stream()
-                        .filter(i -> i.getSeccion() == ItemSSOP.Seccion.PROCESSING_AREA)
-                        .count();
-                System.out.println("Items Processing Area: " + processingCount);
-
-                // Ajustar ancho de columnas
-                sheet.autoSizeColumn(0);
-                sheet.autoSizeColumn(1);
-                sheet.setColumnWidth(2, 3000);
-                sheet.setColumnWidth(3, 3000);
-                sheet.setColumnWidth(4, 6000);
-                sheet.autoSizeColumn(5);
-                sheet.autoSizeColumn(6);
-                sheet.autoSizeColumn(7);
-                sheet.autoSizeColumn(8);
             }
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
