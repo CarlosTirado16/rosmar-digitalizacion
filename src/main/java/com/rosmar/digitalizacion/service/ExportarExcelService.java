@@ -23,6 +23,7 @@ public class ExportarExcelService {
     }
 
     public byte[] exportarRegistros(List<RegistroSSOP> registros) throws IOException {
+        System.setProperty("java.awt.headless", "true");
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
 
             // Estilos
